@@ -79,6 +79,76 @@ function validateStudent(req, res, next) {
     next();
 }
 
+router.patch("/:id", (req, res) => {
+
+   const id = Number(req.params.id);
+
+   const {name, branch, semester} = req.body;
+
+  if (name === undefined &&
+    branch === undefined &&
+    semester === undefined){
+        return res.status(400).json({
+            "success": false,
+            "message": "At least one field is required."
+        })
+   };
+
+   const student = students.find(student => student.id === id);
+
+
+    if(!student){
+        return res.status(404).json({
+            success : false,
+            message : "Student not found"
+        });
+    }
+
+    if(name !== undefined && name.trim() === ""){
+        return res.status(400).json({
+            success : false,
+            message : "Name is Empty!!"
+        });
+    ;}
+
+    if(branch !== undefined && branch.trim() === ""){
+        return res.status(400).json({
+            success : false,
+            message : "Branch is Empty!!"
+        });
+    }
+
+    let sem;
+    if(semester !== undefined){
+        sem = Number(semester);
+        if(Number.isNaN(sem) || sem < 1 || sem > 8){
+            return res.status(400).json({
+                success : false,
+                message : "Semester is not valid!!"
+            });
+        }
+    }
+
+    if (name !== undefined) {
+        student.name = name.trim();
+    }
+
+    if (branch !== undefined) {
+        student.branch = branch.trim();
+    }
+
+    if (semester !== undefined) {
+        student.semester = sem;
+    }
+
+
+    return res.status(200).json({
+        success: true,
+        student
+    });
+
+});
+
 router.put("/:id", validateStudent, (req, res) => {
 
    const id = Number(req.params.id);
