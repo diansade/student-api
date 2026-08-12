@@ -2,26 +2,38 @@ const express = require("express");
 
 const router = express.Router();
 
-let students = [
-    {
-        id: 1,
-        name: "Dibakar",
-        branch: "CSE",
-        semester: 5
-    },
-    {
-        id: 2,
-        name: "Rahul",
-        branch: "ECE",
-        semester: 5
-    }
-];
-
 router.get("/", (req, res) => {
     res.status(200).json({
         success: true,
         count: students.length,
         students
+    });
+});
+
+router.delete("/:id", (req,res) => {
+    const id = Number(req.params.id);
+
+    if(Number.isNaN(id)){
+        return res.status(400).json({
+            success : false,
+            message : "Id is not valid a number!!!"
+        });
+    }
+
+    const student = students.find((student) => student.id === id);
+
+    if(!student){
+        return res.status(404).json({
+            success : false,
+            message : "Student not found"
+        });
+    }
+
+    students = students.filter((student) => student.id !== id);
+
+    return res.status(200).json({
+        success : true,
+        message : "Student deleted successfully"
     });
 });
 
